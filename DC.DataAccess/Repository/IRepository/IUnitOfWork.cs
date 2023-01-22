@@ -12,6 +12,8 @@ namespace DC.DataAccess.Repository.IRepository
        
         ICoverTypeRepository CoverType { get; }
 
+        IProductRepository Product { get; }
+
 
         void Save();
     }
