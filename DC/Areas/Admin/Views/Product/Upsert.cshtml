@@ -5,12 +5,15 @@
     <input asp-for="Product.Id" hidden />
     <input asp-for="Product.ImageURL" hidden />
 
+
     <div class="row">
         <div class="col-10">
             <div class="border p-3 mt-4 row">
-                
-             </div>
-  
+                <div class="col-12 pb-2">
+                    <h2 class="text-primary">@(Model.Product.Id != 0 ? "Update" : "Create")  Product</h2>
+                    <hr />
+                </div>
+        </div>
             <div class="form-group">
                 <label asp-for="Product.Name" class="control-label"></label>
                 <input asp-for="Product.Name" class="form-control" />
@@ -83,15 +86,14 @@
                     Back to List
                 </a>
             </div>
-        
-    </div>
+        </div>
     
             <div class="col-2 pt-4">
                 <img src="@Model.Product.ImageURL"
                      width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
             </div>
       
-           
+     
 </form>
     
 

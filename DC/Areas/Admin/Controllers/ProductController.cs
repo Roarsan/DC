@@ -93,8 +93,6 @@ public class ProductController : Controller
                     }
                 }
 
-
-
                 using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
                 {
                     file.CopyTo(fileStreams);
@@ -102,7 +100,15 @@ public class ProductController : Controller
                 obj.Product.ImageURL = @"\images\products\" + fileName + extension;
 
             }
-            _unitOfWork.Product.Add(obj.Product);
+            if (obj.Product.Id == 0)
+            {
+                _unitOfWork.Product.Add(obj.Product);
+            }
+            else
+            {
+                _unitOfWork.Product.Update(obj.Product);
+            }
+            
             _unitOfWork.Save();
 
             return RedirectToAction("Index");
