@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DC.Models
 {
@@ -31,14 +32,17 @@ namespace DC.Models
         public int Type { get; set; } = 0;
         [Required]
         public decimal DiscountedPrice { get; set; }
+        [ValidateNever]
 
         public string ImageURL { get; set; }
         [Required]
         public int CategoryId { get; set; }
         [ForeignKey("CategoryId")]
+        [ValidateNever]
         public Category Category { get; set; }
         [Required]
         public int CoverTypeId { get; set; }
+        [ValidateNever]
         public CoverType CoverType { get; set; }
     }
 }

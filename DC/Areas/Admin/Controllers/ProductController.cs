@@ -2,8 +2,12 @@
 using DC.DataAccess.Repository;
 using DC.DataAccess.Repository.IRepository;
 using DC.Models;
+using DC.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace DC.Areas.Admin.Controllers;
 [Area("Admin")]
@@ -11,17 +15,19 @@ namespace DC.Areas.Admin.Controllers;
 public class ProductController : Controller
 {
     private readonly IUnitofWork _unitOfWork;
+    private readonly IWebHostEnvironment _hostEnvironment;
 
-    public ProductController(IUnitofWork unitofWork)
+    public ProductController(IUnitofWork unitofWork, IWebHostEnvironment hostEnvironment)
     {
         _unitOfWork = unitofWork;
+        _hostEnvironment = hostEnvironment; 
     }
 
     // GET: Product
     public IActionResult Index()
     {
-        IEnumerable<Product> objProductList = _unitOfWork.Product.GetAll();
-        return View(objProductList);
+        
+        return View();
     }
 
     // GET: Product/Details/5
@@ -46,12 +52,25 @@ public class ProductController : Controller
     // GET: Product/Upsert/5
     public IActionResult Upsert(int? id)
     {
-        Product product = new();
-            
-            if (id == null || id == 0)
+        ProductVM  productVM = new()
+        {
+            Product = new(),
+            CategoryList = _unitOfWork.Category.GetAll().Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Id.ToString()
+            }),
+            CoverTypeList = _unitOfWork.CoverType.GetAll().Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Id.ToString()
+            }),
+        };
+
+        if (id == null || id == 0)
         {
             //create product
-            return View(product);
+            return View(productVM);
         }
         else
         {
@@ -60,7 +79,7 @@ public class ProductController : Controller
         }
 
        
-        return View(product);
+        return View(productVM);
     }
 
     // POST: product/Edit/5
@@ -69,12 +88,30 @@ public class ProductController : Controller
     //Post for edit
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Edit(Product obj)
+    public IActionResult Upsert(ProductVM obj, IFormFile? file)
     {
+
         if (ModelState.IsValid)
         {
-            _unitOfWork.Product.Update(obj);
+            string wwwRootPath = _hostEnvironment.WebRootPath;
+            if (file != null)
+            {
+                string fileName = Guid.NewGuid().ToString();
+                var uploads = Path.Combine(wwwRootPath, @"images\products");
+                var extension = Path.GetExtension(file.FileName);
+
+             
+
+                using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+                {
+                    file.CopyTo(fileStreams);
+                }
+                obj.Product.ImageURL = @"\images\products\" + fileName + extension;
+
+            }
+             _unitOfWork.Product.Add(obj.Product);
             _unitOfWork.Save();
+            TempData["success"] = "Product created successfully";
             return RedirectToAction("Index");
         }
         return View(obj);
@@ -119,5 +156,14 @@ public class ProductController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    #region API CALLS
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        var productList = _unitOfWork.Product.GetAll();
+        return Json(new { data = productList});
+    }
+
+#endregion
 
 }
