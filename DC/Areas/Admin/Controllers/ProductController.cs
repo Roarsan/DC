@@ -20,13 +20,13 @@ public class ProductController : Controller
     public ProductController(IUnitofWork unitofWork, IWebHostEnvironment hostEnvironment)
     {
         _unitOfWork = unitofWork;
-        _hostEnvironment = hostEnvironment; 
+        _hostEnvironment = hostEnvironment;
     }
 
     // GET: Product
     public IActionResult Index()
     {
-        
+
         return View();
     }
 
@@ -52,7 +52,7 @@ public class ProductController : Controller
     // GET: Product/Upsert/5
     public IActionResult Upsert(int? id)
     {
-        ProductVM  productVM = new()
+        ProductVM productVM = new()
         {
             Product = new(),
             CategoryList = _unitOfWork.Category.GetAll().Select(i => new SelectListItem
@@ -75,10 +75,10 @@ public class ProductController : Controller
         else
         {
             //update product
-        
+
         }
 
-       
+
         return View(productVM);
     }
 
@@ -100,7 +100,7 @@ public class ProductController : Controller
                 var uploads = Path.Combine(wwwRootPath, @"images\products");
                 var extension = Path.GetExtension(file.FileName);
 
-             
+
 
                 using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
                 {
@@ -109,7 +109,7 @@ public class ProductController : Controller
                 obj.Product.ImageURL = @"\images\products\" + fileName + extension;
 
             }
-             _unitOfWork.Product.Add(obj.Product);
+            _unitOfWork.Product.Add(obj.Product);
             _unitOfWork.Save();
             TempData["success"] = "Product created successfully";
             return RedirectToAction("Index");
@@ -160,10 +160,10 @@ public class ProductController : Controller
     [HttpGet]
     public IActionResult GetAll()
     {
-        var productList = _unitOfWork.Product.GetAll();
-        return Json(new { data = productList});
+        var productList = _unitOfWork.Product.GetAll(includePropeties:"Category,CoverType");
+        return Json(new { data = productList });
     }
 
-#endregion
+    #endregion
 
 }
