@@ -30,23 +30,6 @@ public class ProductController : Controller
         return View();
     }
 
-    // GET: Product/Details/5
-    public async Task<IActionResult> Details(int? id)
-    {
-        if (id == null || id == null)
-        {
-            return NotFound();
-        }
-
-        var product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
-
-        if (product == null)
-        {
-            return NotFound();
-        }
-
-        return View(product);
-    }
 
 
     // GET: Product/Upsert/5
@@ -74,6 +57,7 @@ public class ProductController : Controller
         }
         else
         {
+            productVM.Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
             //update product
 
         }
@@ -100,6 +84,15 @@ public class ProductController : Controller
                 var uploads = Path.Combine(wwwRootPath, @"images\products");
                 var extension = Path.GetExtension(file.FileName);
 
+                if (obj.Product.ImageURL != null)
+                {
+                    var oldImagePath = Path.Combine(wwwRootPath, obj.Product.ImageURL.TrimStart('\\'));
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+                }
+
 
 
                 using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
@@ -111,7 +104,7 @@ public class ProductController : Controller
             }
             _unitOfWork.Product.Add(obj.Product);
             _unitOfWork.Save();
-            TempData["success"] = "Product created successfully";
+
             return RedirectToAction("Index");
         }
         return View(obj);
@@ -119,51 +112,43 @@ public class ProductController : Controller
 
 
 
-    // GET: product/Delete/5
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null || id == 0)
-        {
-            return NotFound();
-        }
 
-        var product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
 
-        if (product == null)
-        {
-            return NotFound();
-        }
 
-        return View(product);
-    }
-
-    // POST: product/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
-    {
-        if (id == null)
-        {
-            return Problem("Entity set 'ApplicationDbContext.Product'  is null.");
-        }
-        var product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
-        if (product != null)
-        {
-            _unitOfWork.Product.Remove(product);
-        }
-
-        _unitOfWork.Save();
-        return RedirectToAction(nameof(Index));
-    }
 
     #region API CALLS
     [HttpGet]
     public IActionResult GetAll()
     {
-        var productList = _unitOfWork.Product.GetAll(includePropeties:"Category,CoverType");
+        var productList = _unitOfWork.Product.GetAll(includePropeties: "Category,CoverType");
         return Json(new { data = productList });
     }
 
-    #endregion
 
+
+    //POST
+    [HttpDelete]
+    public IActionResult Delete(int? id)
+    {
+        var obj = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
+        if (obj == null)
+        {
+            return Json(new { success = false, message = "Error while deleting" });
+        }
+
+        var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, obj.ImageURL.TrimStart('\\'));
+        if (System.IO.File.Exists(oldImagePath))
+        {
+            System.IO.File.Delete(oldImagePath);
+        }
+
+        _unitOfWork.Product.Remove(obj);
+        _unitOfWork.Save();
+        return Json(new { success = true, message = "Delete Successful" });
+
+
+        #endregion
+
+
+    }
 }
