@@ -1,8 +1,7 @@
-﻿
-using DC.Models;
+﻿using DC.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DC.DataAccess
+namespace DC.DataAccess.Data
 {
     public class ApplicationDbContext : DbContext
     {

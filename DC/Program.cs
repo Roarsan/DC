@@ -1,5 +1,4 @@
-
-using DC.DataAccess;
+using DC.DataAccess.Data;
 using DC.DataAccess.Repository;
 using DC.DataAccess.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;

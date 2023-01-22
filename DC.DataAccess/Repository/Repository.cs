@@ -1,4 +1,5 @@
-﻿using DC.DataAccess.Repository.IRepository;
+﻿using DC.DataAccess.Data;
+using DC.DataAccess.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
