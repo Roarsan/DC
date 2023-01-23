@@ -27,12 +27,12 @@ namespace DC.DataAccess.Repository
         }
 
         //includeprop "Category,CoverType"
-        public IEnumerable<T> GetAll(string? includePropeties = null)
+        public IEnumerable<T> GetAll(string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
-            if(includePropeties != null)
+            if(includeProperties != null)
             {
-                foreach(var includeProp in includePropeties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach(var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     query = query.Include(includeProp);
                 }
@@ -40,14 +40,14 @@ namespace DC.DataAccess.Repository
             return query.ToList();
         }
 
-        public T GetFirstOrDefault(Expression<Func<T, bool>> filter, string? includePropeties = null)
+        public T GetFirstOrDefault(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
 
             IQueryable<T> query = dbSet;
             query = query.Where(filter);
-            if (includePropeties != null)
+            if (includeProperties != null)
             {
-                foreach (var includeProp in includePropeties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     query = query.Include(includeProp);
                 }

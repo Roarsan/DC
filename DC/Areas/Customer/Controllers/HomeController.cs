@@ -11,26 +11,26 @@ namespace DC.Areas.Customer.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly IUnitofWork _unitOfWork;
+    private readonly IUnitofWork _unitofWork;
 
     public HomeController(ILogger<HomeController> logger, IUnitofWork unitofWork)
     {
         _logger = logger;
-        _unitOfWork = unitofWork;
+        _unitofWork = unitofWork;
     }
 
     public IActionResult Index()
     {
-        IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includePropeties: "Category,CoverType");
+        IEnumerable<Product> productList = _unitofWork.Product.GetAll(includeProperties: "Category,CoverType");
 
         return View(productList);
     }
-    public async Task<IActionResult> Details(int id)
+    public IActionResult Details(int id)
     {
         ShoppingCart cartObj = new()
         {
             Count = 1,
-            Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id, includeProperties: "Category,CoverType"),
+            Product = _unitofWork.Product.GetFirstOrDefault(u => u.Id == id, includeProperties: "Category,CoverType"),
         };
         return View(cartObj);
     }
