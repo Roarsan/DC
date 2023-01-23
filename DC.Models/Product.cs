@@ -15,18 +15,18 @@ namespace DC.Models
         public int Id { get; set; }
         [Required, StringLength(30)]
 
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
         [Required, StringLength(50)]
 
-        public string Description { get; set; } = string.Empty;
+        public string Description { get; set; }
         [Required, StringLength(255)]
-        public string Colour { get; set; } = string.Empty;
+        public string Colour { get; set; }
         [Required]
         public decimal Price { get; set; }
         [Required]
         public int Size { get; set; }
         [Required, StringLength(30)]
-        public string Material { get; set; } = string.Empty;
+        public string Material { get; set; }
 
         [Range(0, 6)]
         public int Type { get; set; } = 0;

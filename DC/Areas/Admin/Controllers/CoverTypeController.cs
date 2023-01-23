@@ -24,23 +24,7 @@ public class CoverTypeController : Controller
         return View(objCoverTypeList);
     }
 
-    // GET: CoverType/Details/5
-    public async Task<IActionResult> Details(int? id)
-    {
-        if (id == null || id == null)
-        {
-            return NotFound();
-        }
 
-        var coverType = _unitOfWork.CoverType.GetFirstOrDefault(u => u.Id == id);
-
-        if (coverType == null)
-        {
-            return NotFound();
-        }
-
-        return View(coverType);
-    }
 
     // GET: CoverType/Create
     public IActionResult Create()
