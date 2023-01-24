@@ -25,12 +25,12 @@ public class HomeController : Controller
 
         return View(productList);
     }
-    public IActionResult Details(int id)
+    public IActionResult Details(int productid)
     {
         ShoppingCart cartObj = new()
         {
             Count = 1,
-            Product = _unitofWork.Product.GetFirstOrDefault(u => u.Id == id, includeProperties: "Category,CoverType"),
+            Product = _unitofWork.Product.GetFirstOrDefault(u => u.Id == productid, includeProperties: "Category,CoverType"),
         };
         return View(cartObj);
     }
