@@ -12,113 +12,104 @@ public class CoverTypeController : Controller
 {
     private readonly IUnitofWork _unitOfWork;
 
-    public CoverTypeController(IUnitofWork unitofWork)
+    public CoverTypeController(IUnitofWork unitOfWork)
     {
-        _unitOfWork = unitofWork;
+        _unitOfWork = unitOfWork;
     }
 
-    // GET: CoverType
     public IActionResult Index()
     {
         IEnumerable<CoverType> objCoverTypeList = _unitOfWork.CoverType.GetAll();
         return View(objCoverTypeList);
     }
 
-
-
-    // GET: CoverType/Create
+    //GET
     public IActionResult Create()
     {
         return View();
     }
 
-    // POST: CoverType/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    //POST
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Name,DisplayOrder,CreatedDate")] CoverType coverType)
+    public IActionResult Create(CoverType obj)
     {
         if (ModelState.IsValid)
         {
-            _unitOfWork.CoverType.Add(coverType);
+            _unitOfWork.CoverType.Add(obj);
             _unitOfWork.Save();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(coverType);
-    }
-
-    // GET: CoverType/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null || id == 0)
-        {
-            return NotFound();
-        }
-
-        var coverType = _unitOfWork.CoverType.GetFirstOrDefault(u => u.Id == id);
-        if (coverType == null)
-        {
-            return NotFound();
-        }
-        return View(coverType);
-    }
-
-    // POST: CoverType/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    //Post for edit
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Edit(CoverType obj)
-    {
-        if (ModelState.IsValid)
-        {
-            _unitOfWork.CoverType.Update(obj);
-            _unitOfWork.Save();
+            TempData["success"] = "CoverType created successfully";
             return RedirectToAction("Index");
         }
         return View(obj);
     }
 
-
-
-    // GET: CoverType/Delete/5
-    public async Task<IActionResult> Delete(int? id)
+    //GET
+    public IActionResult Edit(int? id)
     {
         if (id == null || id == 0)
         {
             return NotFound();
         }
+        var CoverTypeFromDbFirst = _unitOfWork.CoverType.GetFirstOrDefault(u => u.Id == id);
 
-        var category = _unitOfWork.CoverType.GetFirstOrDefault(u => u.Id == id);
-
-        if (category == null)
+        if (CoverTypeFromDbFirst == null)
         {
             return NotFound();
         }
 
-        return View(category);
+        return View(CoverTypeFromDbFirst);
     }
 
-    // POST: CoverType/Delete/5
+    //POST
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Edit(CoverType obj)
+    {
+
+        if (ModelState.IsValid)
+        {
+            _unitOfWork.CoverType.Update(obj);
+            _unitOfWork.Save();
+            TempData["success"] = "CoverType updated successfully";
+            return RedirectToAction("Index");
+        }
+        return View(obj);
+    }
+
+    public IActionResult Delete(int? id)
+    {
+        if (id == null || id == 0)
+        {
+            return NotFound();
+        }
+        var CoverTypeFromDbFirst = _unitOfWork.CoverType.GetFirstOrDefault(u => u.Id == id);
+
+        if (CoverTypeFromDbFirst == null)
+        {
+            return NotFound();
+        }
+
+        return View(CoverTypeFromDbFirst);
+    }
+
+    //POST
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
+    public IActionResult DeletePOST(int? id)
     {
-        if (id == null)
+        var obj = _unitOfWork.CoverType.GetFirstOrDefault(u => u.Id == id);
+        if (obj == null)
         {
-            return Problem("Entity set 'ApplicationDbContext.CoverType'  is null.");
-        }
-        var category = _unitOfWork.CoverType.GetFirstOrDefault(u => u.Id == id);
-        if (category != null)
-        {
-            _unitOfWork.CoverType.Remove(category);
+            return NotFound();
         }
 
+        _unitOfWork.CoverType.Remove(obj);
         _unitOfWork.Save();
-        return RedirectToAction(nameof(Index));
+        TempData["success"] = "CoverType deleted successfully";
+        return RedirectToAction("Index");
+
+
+
     }
-
-
 }
