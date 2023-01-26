@@ -14,6 +14,10 @@ namespace DC.DataAccess.Repository.IRepository
 
         IProductRepository Product { get; }
 
+        IShoppingCartRepository ShoppingCart { get; }
+
+        IApplicationUserRepository ApplicationUser { get; }
+
 
         void Save();
     }

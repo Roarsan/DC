@@ -2,8 +2,11 @@
 using DC.DataAccess.Repository.IRepository;
 using DC.Models;
 using DC.Models.ViewModels;
+using DC.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace DC.Areas.Customer.Controllers;
 [Area("Customer")]
@@ -34,6 +37,36 @@ public class HomeController : Controller
         };
         return View(cartObj);
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize]
+    public IActionResult Details(ShoppingCart shoppingCart)
+    {
+        var claimsIdentity = (ClaimsIdentity)User.Identity;
+        var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+        shoppingCart.ApplicationUserId = claim.Value;
+
+        ShoppingCart cartFromDb = _unitofWork.ShoppingCart.GetFirstOrDefault(
+            u => u.ApplicationUserId == claim.Value && u.ProductId == shoppingCart.ProductId);
+
+
+        if (cartFromDb == null)
+        {
+
+            _unitofWork.ShoppingCart.Add(shoppingCart);
+
+        }
+        else
+        {
+            _unitofWork.ShoppingCart.IncrementCount(cartFromDb, shoppingCart.Count);
+  
+        }
+
+        _unitofWork.Save();
+        return RedirectToAction(nameof(Index));
+    }
+
     public IActionResult Privacy()
     {
         return View();
