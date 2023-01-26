@@ -11,11 +11,17 @@ namespace DC.Models
 {
 	public class ShoppingCart
 	{
+       
         public int Id { get; set; }
 
      
         public Product Product { get; set; }
         [Range(1, 1000, ErrorMessage = "Please enter a value between 1 and 1000")]
+
+        public string ApplicationUserId { get; set; }
+        [ForeignKey("ApplicationUserId")]
+        [ValidateNever]
+
         public int Count { get; set; }
     }
 }
